@@ -14,38 +14,44 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  email    String   @unique
-  name     String?
-  password String
-  role     Role     @default(USER)
-  posts    Post[]
-  profile  Profile?
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String   @unique
+  password  String
+  role      Role     @default(USER)
+  posts     Post[]
+  profile   Profile?
+  createdAt DateTime @default(now())
 }
 
 model Profile {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  bio    String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @unique @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  bio       String?
+  dob       String?
+  phone     String?
+  image     String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique @db.ObjectId
+  createdAt DateTime @default(now())
 }
 
 model Post {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt   DateTime   @default(now())
   title       String
   published   Boolean    @default(false)
   author      User       @relation(fields: [authorId], references: [id])
   authorId    String     @db.ObjectId
   categoryIDs String[]   @db.ObjectId
   categories  Category[] @relation(fields: [categoryIDs], references: [id])
+  createdAt   DateTime   @default(now())
 }
 
 model Category {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  name    String
-  postIDs String[] @db.ObjectId
-  posts   Post[]   @relation(fields: [postIDs], references: [id])
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  postIDs   String[] @db.ObjectId
+  posts     Post[]   @relation(fields: [postIDs], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum Role {

@@ -6,7 +6,9 @@ import cors from "cors";
 import fileUpload from "express-fileupload";
 
 // Import Routes
-import v1UserRoutes from "./routes/v1/auth.routes";
+import v1AuthRoutes from "./routes/v1/auth.routes";
+import v1UserRoutes from "./routes/v1/user.routes";
+import v1ProfileRoutes from "./routes/v1/profile.routes";
 
 const app = express();
 const server = http.createServer(app);
@@ -22,7 +24,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Routes
-app.use("/api/v1/auth", v1UserRoutes);
+app.use("/api/v1/auth", v1AuthRoutes);
+app.use("/api/v1/users", v1UserRoutes);
+app.use("/api/v1/profile", v1ProfileRoutes);
 
 app.get("/", (req, res) => {
   res.json("Api is running");

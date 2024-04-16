@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import prisma from "../../prisma/client";
 import {
   comparePassword,
+  generateToken,
   hashPassword,
   responseErrorMessage,
   responseSuccessMessage,
@@ -20,7 +21,7 @@ export const signUp = async (
 ) => {
   const { name, email, password } = req.body;
 
-  const existingEmail = await prisma.user.findFirst({
+  const existingEmail = await prisma.user.findUnique({
     where: {
       email,
     },
@@ -38,7 +39,7 @@ export const signUp = async (
     });
   }
 
-  const existingName = await prisma.user.findFirst({
+  const existingName = await prisma.user.findUnique({
     where: {
       name,
     },
@@ -60,6 +61,14 @@ export const signUp = async (
       email,
       name,
       password: hash,
+      profile: {
+        create: {
+          bio: "",
+          dob : "",
+          phone: "",
+          image: "",
+        },
+      }
     },
   });
 
@@ -79,7 +88,7 @@ export const signIn = async (
 ) => {
   const { email, password } = req.body;
 
-  const existingEmail = await prisma.user.findFirst({
+  const existingEmail = await prisma.user.findUnique({
     where: {
       email,
     },
@@ -105,11 +114,14 @@ export const signIn = async (
     );
   }
 
+  const token = generateToken(existingEmail.id, existingEmail.email);
+
   const user = {
     id: existingEmail.id,
     email: existingEmail.email,
     name: existingEmail.name,
     role: existingEmail.role,
+    token
   };
 
   return responseSuccessMessage(res, "Sign In Successfully", user);
