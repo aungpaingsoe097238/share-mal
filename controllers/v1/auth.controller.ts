@@ -19,7 +19,7 @@ export const signUp = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { name, email, password } = req.body;
+  const { name, username, email, password } = req.body;
 
   const existingEmail = await prisma.user.findUnique({
     where: {
@@ -54,21 +54,44 @@ export const signUp = async (
     );
   }
 
+  const existingUserName = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+
+  if (existingUserName) {
+    return responseErrorMessage(
+      res,
+      "Invalid Credentials",
+      "Username is already taken",
+      401
+    );
+  }
+
   // Hashing Password
   const hash = hashPassword(password);
   const user = await prisma.user.create({
     data: {
       email,
       name,
+      username,
       password: hash,
       profile: {
         create: {
           bio: "",
-          dob : "",
+          dob: "",
           phone: "",
           image: "",
         },
-      }
+      },
+    },
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      email: true,
+      createdAt: true,
     },
   });
 
@@ -121,7 +144,7 @@ export const signIn = async (
     email: existingEmail.email,
     name: existingEmail.name,
     role: existingEmail.role,
-    token
+    token,
   };
 
   return responseSuccessMessage(res, "Sign In Successfully", user);

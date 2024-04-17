@@ -1,0 +1,49 @@
+[
+  {
+    "name": "History",
+    "children": [{ "name": "Ancient History" }, { "name": "Modern History" }]
+  },
+  {
+    "name": "Art",
+    "children": [
+      { "name": "Drawing" },
+      { "name": "Singing" },
+      { "name": "Dancing" }
+    ]
+  },
+  {
+    "name": "Technology",
+    "children": [
+      { "name": "ChatGPT" },
+      { "name": "Deep Learning" },
+      { "name": "Machine Learning" },
+      { "name": "Natural Language Processing" },
+      { "name": "Reinforcement Learning" },
+      { "name": "Robotics" },
+      { "name": "Speech Recognition" },
+      { "name": "Web Development" },
+      { "name": "Web Scraping" }
+    ]
+  },
+  {
+    "name": "World",
+    "children": [
+      { "name": "Myanmar" },
+      { "name": "Bangkok" },
+      { "name": "Camping" },
+      { "name": "Hiking" },
+      { "name": "Summer" }
+    ]
+  },
+  {
+    "name": "Travel",
+    "children": [
+      { "name": "Tourism" },
+      { "name": "Travel Tips" },
+      { "name": "Travel Guide" },
+      { "name": "Travel Agency" },
+      { "name": "Vaction" },
+      { "name": "Vanlife" }
+    ]
+  }
+]

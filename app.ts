@@ -9,6 +9,8 @@ import fileUpload from "express-fileupload";
 import v1AuthRoutes from "./routes/v1/auth.routes";
 import v1UserRoutes from "./routes/v1/user.routes";
 import v1ProfileRoutes from "./routes/v1/profile.routes";
+import v1TopicRoutes from "./routes/v1/topic.routes";
+import v1PostRoutes from "./routes/v1/post.routes";
 
 const app = express();
 const server = http.createServer(app);
@@ -27,6 +29,8 @@ app.use(cors(corsOptions));
 app.use("/api/v1/auth", v1AuthRoutes);
 app.use("/api/v1/users", v1UserRoutes);
 app.use("/api/v1/profile", v1ProfileRoutes);
+app.use("/api/v1/topics", v1TopicRoutes);
+app.use("/api/v1/posts", v1PostRoutes);
 
 app.get("/", (req, res) => {
   res.json("Api is running");

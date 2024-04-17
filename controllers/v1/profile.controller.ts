@@ -40,6 +40,7 @@ export const update = async (req: any, res: Response, next: NextFunction) => {
       },
     },
     select: {
+      id: true,
       name: true,
       email: true,
       createdAt: true,
