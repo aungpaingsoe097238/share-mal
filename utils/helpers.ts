@@ -1,6 +1,8 @@
 import { Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import slugify from "slugify";
+import prisma from "../prisma/client";
 
 /**
  * Hashes a plain text password using bcrypt.
@@ -75,3 +77,30 @@ export const responseErrorMessage = (
     errors,
   });
 };
+
+/**
+ * Generates a unique slug for a given title.
+ * @param title - The title for which a unique slug needs to be generated.
+ * @returns A unique slug based on the provided title.
+ */
+export const generateUniqueSlug = async (title: string): Promise<string> => {
+  let slug = slugify(title, { lower: true });
+
+  // Check if the generated slug already exists in the database
+  let existingPost = await prisma.post.findUnique({
+    where: { slug },
+  });
+
+  // If a post with the same slug exists, append a counter to make it unique
+  let counter = 1;
+  while (existingPost) {
+    slug = `${slug}-${counter}`;
+    existingPost = await prisma.post.findUnique({
+      where: { slug },
+    });
+    counter++;
+  }
+
+  return slug;
+};
+

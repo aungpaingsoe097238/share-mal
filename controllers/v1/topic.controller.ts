@@ -8,6 +8,13 @@ export const index = async (
   next: NextFunction
 ) => {
   const topics = await prisma.topic.findMany({
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      parentId: true,
+      children: true
+    },
     orderBy: {
       id: "desc",
     },

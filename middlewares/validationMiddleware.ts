@@ -11,13 +11,17 @@ import { responseErrorMessage } from "../utils/helpers";
 const validationMiddleware = (schema?: Joi.Schema, message?: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (schema) {
-      const { error } = schema.validate(req.body);
-
+      const { error }: any = schema.validate(req.body);
       if (error) {
+
+        const errorObject = {
+          [error.details[0].path]: error.details[0].message,
+        };
+        
         return responseErrorMessage(
           res,
           message ? message : "Validation failed",
-          error.details[0].message,
+          errorObject,
           400
         );
       }

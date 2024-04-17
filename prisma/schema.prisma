@@ -37,26 +37,31 @@ model Profile {
 }
 
 model Post {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  slug      String   @unique
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String          @unique
   title     String
   content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @db.ObjectId
-  topic     Topic    @relation(fields: [topicId], references: [id])
-  topicId   String   @db.ObjectId
-  createdAt DateTime @default(now())
+  published PublishedStatus @default(PUBLISHED)
+  author    User            @relation(fields: [authorId], references: [id])
+  authorId  String          @db.ObjectId
+  topic     Topic           @relation(fields: [topicId], references: [id])
+  topicId   String          @db.ObjectId
+  createdAt DateTime        @default(now())
 }
 
 model Topic {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   posts     Post[]
-  parentId  String?  @db.ObjectId 
+  parentId  String?  @db.ObjectId
   parent    Topic?   @relation("ParentTopic", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children  Topic[]  @relation("ParentTopic")
   createdAt DateTime @default(now())
+}
+
+enum PublishedStatus {
+  PUBLISHED
+  NOT_PUBLISHED
 }
 
 enum Role {

@@ -3,6 +3,7 @@ import {
   create,
   destroy,
   index,
+  show,
   update,
 } from "../../controllers/v1/post.controller";
 import errorMiddleware from "../../middlewares/errorMiddleware";
@@ -22,7 +23,7 @@ router
 
 router
   .route("/:slug")
-  .get(authMiddleware, errorMiddleware(create))
+  .get(authMiddleware, errorMiddleware(show))
   .put(
     authMiddleware,
     validationMiddleware(updatePostSchema),
