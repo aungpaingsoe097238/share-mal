@@ -33,3 +33,9 @@ export const signUpSchema = Joi.object<SignUpType>({
       "any.only": "Passwords must match",
     }),
 });
+
+export const checkTokenSchema = Joi.object({
+  token: Joi.string().required().messages({
+    "any.required": "Token is required",
+  }),
+});

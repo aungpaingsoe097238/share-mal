@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 app.use("*", (req, res) => {
   res.status(404).send({
     status: false,
-    message: "Not found",
+    message: "Api route not found",
   });
 });
 

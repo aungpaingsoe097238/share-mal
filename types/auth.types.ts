@@ -10,3 +10,7 @@ export interface SignInType {
   email: string;
   password: string;
 }
+
+export interface CheckTokenType {
+  token: string;
+}

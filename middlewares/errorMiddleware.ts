@@ -12,9 +12,10 @@ const errorMiddleware = (fun: Function, schema?: Joi.Schema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       await fun(req, res, next);
-    } catch (error) {
-      console.error("Error:", error);
-      return responseErrorMessage(res, "Internal Server Errord", error, 500);
+    } catch (error : any) {
+      return responseErrorMessage(res, "Internal Server Errord",{
+        [error.name] : error.message
+      }, 500);
     }
   };
 };

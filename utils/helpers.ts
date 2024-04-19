@@ -27,9 +27,13 @@ export const comparePassword = (plain: string, hash: string): boolean =>
  * @param email - The user email.
  * @returns The generated JWT token.
  */
-export const generateToken = (id: string, email: string): string =>
+export const generateToken = (
+  id: string,
+  email: string,
+  expiresIn: string
+): string =>
   jwt.sign({ id, email }, process.env.TOKEN_SECRET as string, {
-    expiresIn: "1h",
+    expiresIn,
   });
 
 /**
@@ -39,6 +43,14 @@ export const generateToken = (id: string, email: string): string =>
  */
 export const verifyToken = (token: string): any =>
   jwt.verify(token, process.env.TOKEN_SECRET as string);
+
+export const generateExpiresDate = (expiresIn: number) => {
+  const expTimestamp = expiresIn;
+  const expMilliseconds = expTimestamp * 1000;
+  const expDate = new Date(expMilliseconds);
+  const expString = expDate.toLocaleString();
+  return expString;
+};
 
 /**
  * Sends a success response with the provided message and data.
@@ -103,4 +115,3 @@ export const generateUniqueSlug = async (title: string): Promise<string> => {
 
   return slug;
 };
-

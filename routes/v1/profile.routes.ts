@@ -7,6 +7,11 @@ import errorMiddleware from "../../middlewares/errorMiddleware";
 const router = Router();
 
 router.get("/me", authMiddleware, errorMiddleware(me));
-router.put("/update", authMiddleware, validationMiddleware( updateProfileSchema ), errorMiddleware(update));
+router.put(
+  "/update",
+  authMiddleware,
+  validationMiddleware(updateProfileSchema),
+  errorMiddleware(update)
+);
 
 export default router;

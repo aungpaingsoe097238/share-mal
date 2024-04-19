@@ -2,10 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import prisma from "../../prisma/client";
 import {
   comparePassword,
+  generateExpiresDate,
   generateToken,
   hashPassword,
   responseErrorMessage,
   responseSuccessMessage,
+  verifyToken,
 } from "../../utils/helpers";
 
 /**
@@ -35,7 +37,7 @@ export const signUp = async (
   if (existingEmail) {
     return res.status(401).json({
       success: false,
-      message: "Email already exists",
+      message: { email: "Email already exists" },
     });
   }
 
@@ -49,7 +51,9 @@ export const signUp = async (
     return responseErrorMessage(
       res,
       "Invalid Credentials",
-      "Name is already exist",
+      {
+        name: "Name is already exist",
+      },
       401
     );
   }
@@ -64,7 +68,9 @@ export const signUp = async (
     return responseErrorMessage(
       res,
       "Invalid Credentials",
-      "Username is already taken",
+      {
+        username: "Username is already taken",
+      },
       401
     );
   }
@@ -120,8 +126,10 @@ export const signIn = async (
   if (!existingEmail) {
     return responseErrorMessage(
       res,
-      "Invalid Credential",
-      "Email not found",
+      "Unauthorized",
+      {
+        email: "Email not found",
+      },
       401
     );
   }
@@ -131,13 +139,15 @@ export const signIn = async (
   if (!existingPassword) {
     return responseErrorMessage(
       res,
-      "Invalid Credential",
-      "Password does not match",
+      "Unauthorized",
+      {
+        password: "Password does not match",
+      },
       401
     );
   }
 
-  const token = generateToken(existingEmail.id, existingEmail.email);
+  const token = generateToken(existingEmail.id, existingEmail.email, "3m");
 
   const user = {
     id: existingEmail.id,
@@ -148,4 +158,35 @@ export const signIn = async (
   };
 
   return responseSuccessMessage(res, "Sign In Successfully", user);
+};
+
+export const checkToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id, email, exp } = verifyToken(req.body.token);
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!existingUser) {
+    return responseErrorMessage(
+      res,
+      "Unauthorized",
+      {
+        token: "Invalid token",
+      },
+      401
+    );
+  }
+
+  const expDate = generateExpiresDate(exp);
+
+  return responseSuccessMessage(res, "Token is valid", {
+    expired_date: expDate,
+  });
 };
