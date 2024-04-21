@@ -12,13 +12,16 @@ export const createPostSchema = Joi.object({
       "any.required": "Published status is requried",
       "any.only": "Published status is must be PUBLISHED or NOT_PUBLISHED",
     }),
-  topicId: Joi.string()
+  topics: Joi.array()
+    .items(Joi.string().empty("").required())
     .required()
-    .pattern(/^[0-9a-fA-F]{24}$/)
+    .unique()
     .messages({
-      "any.required": "Topic is requried",
+      "any.required": "Topics are required",
+      "array.empty": "Topics are required",
       "string.empty": "Topic is required",
       "string.pattern.base": "TopicId must be a valid MongoDB ObjectId",
+      "array.unique": "Topics must be unique",
     }),
 });
 
@@ -28,10 +31,14 @@ export const updatePostSchema = Joi.object({
   published: Joi.string().valid("PUBLISHED", "NOT_PUBLISHED").messages({
     "any.only": "Published status is must be PUBLISHED or NOT_PUBLISHED",
   }),
-  topicId: Joi.string()
-    .pattern(/^[0-9a-fA-F]{24}$/)
+  topics: Joi.array()
+    .items(Joi.string().empty("").required())
+    .unique()
     .messages({
-      "any.required": "Author is requried",
+      "any.required": "Topics are required",
+      "array.empty": "Topics are required",
+      "string.empty": "Topic is required",
       "string.pattern.base": "TopicId must be a valid MongoDB ObjectId",
+      "array.unique": "Topics must be unique",
     }),
 });

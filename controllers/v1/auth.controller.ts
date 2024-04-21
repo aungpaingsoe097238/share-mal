@@ -147,7 +147,7 @@ export const signIn = async (
     );
   }
 
-  const token = generateToken(existingEmail.id, existingEmail.email, "3m");
+  const token = generateToken(existingEmail.id, existingEmail.email, "30d");
 
   const user = {
     id: existingEmail.id,
@@ -165,7 +165,7 @@ export const checkToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { id, email, exp } = verifyToken(req.body.token);
+  const { id, exp } = verifyToken(req.body.token);
 
   const existingUser = await prisma.user.findUnique({
     where: {

@@ -4,14 +4,14 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/app.js",
     "dev": "nodemon app.ts",
     "build": "tsc -p .",
     "studio": "npx prisma studio",
     "db:generate": "npx prisma generate",
     "db:migrate": "npx prisma db push",
-    "db:seed": "node --loader ts-node/esm prisma/seed.ts"
+    "db:seed": "node --loader ts-node/esm prisma/seed.ts",
+    "test" : "npx ts-node-dev ./prisma/prisma.test.ts"
   },
   "author": "",
   "license": "ISC",

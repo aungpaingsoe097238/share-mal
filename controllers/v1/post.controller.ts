@@ -4,7 +4,7 @@ import {
   responseErrorMessage,
   generateUniqueSlug,
 } from "../../utils/helpers";
-import { accessOnlyChildTopic } from "../../utils/post";
+import { validateTopic } from "../../utils/post";
 import prisma from "../../prisma/client";
 
 export const index = async (
@@ -13,6 +13,9 @@ export const index = async (
   next: NextFunction
 ) => {
   const posts = await prisma.post.findMany({
+    where: {
+      published: "PUBLISHED",
+    },
     include: {
       author: {
         select: {
@@ -23,7 +26,7 @@ export const index = async (
           createdAt: true,
         },
       },
-      topic: true,
+      topics: true,
     },
     orderBy: {
       id: "desc",
@@ -34,21 +37,11 @@ export const index = async (
 };
 
 export const create = async (req: any, res: Response, next: NextFunction) => {
-  const { title, content, published, topicId } = req.body;
-  const postSlug = await generateUniqueSlug(title); // Await the promise
+  const { title, content, published, topics } = req.body;
 
-  const existingTopic = await accessOnlyChildTopic(res, topicId);
+  const postSlug = await generateUniqueSlug(title);
 
-  if (!existingTopic) {
-    return responseErrorMessage(
-      res,
-      "Failed to create post",
-      {
-        topicId: "Topic not found",
-      },
-      404
-    );
-  }
+  const existingTopics: any = await validateTopic(res, topics);
 
   const post = await prisma.post.create({
     data: {
@@ -57,7 +50,9 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
       content,
       published,
       authorId: req.user.id,
-      topicId,
+      topics: {
+        create: existingTopics,
+      },
     },
     include: {
       author: {
@@ -69,7 +64,11 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
           createdAt: true,
         },
       },
-      topic: true,
+      topics: {
+        select: {
+          topic: true,
+        },
+      },
     },
   });
 
@@ -80,7 +79,7 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
   const { slug } = req.params;
 
   const existingPost = await prisma.post.findUnique({
-    where: { slug },
+    where: { slug, published: "PUBLISHED" },
   });
 
   if (!existingPost) {
@@ -106,7 +105,7 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
           createdAt: true,
         },
       },
-      topic: true,
+      topics: true,
     },
   });
 
@@ -119,10 +118,17 @@ export const update = async (
   next: NextFunction
 ) => {
   const { slug } = req.params;
-  const { title, content, published, topicId } = req.body;
+  const { title, content, published, topics } = req.body;
 
   const existingPost = await prisma.post.findUnique({
     where: { slug },
+    include: {
+      topics: {
+        select: {
+          id: true,
+        },
+      },
+    },
   });
 
   if (!existingPost) {
@@ -136,18 +142,8 @@ export const update = async (
     );
   }
 
-  const existingTopic = await accessOnlyChildTopic(res, topicId);
-
-  if (!existingTopic) {
-    return responseErrorMessage(
-      res,
-      "Failed to update post",
-      {
-        topicId: "Topic not found",
-      },
-      404
-    );
-  }
+  const topicIds = existingPost.topics.map((topic) => topic.id).join(", ");
+  const existingTopics: any = await validateTopic(res, topics || topicIds);
 
   const post = await prisma.post.update({
     where: { slug },
@@ -155,7 +151,10 @@ export const update = async (
       title: title || existingPost.title,
       content: content || existingPost.content,
       published: published || existingPost.published,
-      topicId: topicId || existingPost.topicId,
+      topics: {
+        deleteMany: {},
+        create: existingTopics,
+      },
     },
     include: {
       author: {
@@ -167,7 +166,11 @@ export const update = async (
           createdAt: true,
         },
       },
-      topic: true,
+      topics: {
+        select: {
+          topic: true,
+        },
+      },
     },
   });
 

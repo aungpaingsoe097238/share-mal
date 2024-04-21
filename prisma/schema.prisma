@@ -44,19 +44,26 @@ model Post {
   published PublishedStatus @default(PUBLISHED)
   author    User            @relation(fields: [authorId], references: [id])
   authorId  String          @db.ObjectId
-  topic     Topic           @relation(fields: [topicId], references: [id])
-  topicId   String          @db.ObjectId
+  topics    PostTopic[]
   createdAt DateTime        @default(now())
 }
 
 model Topic {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  posts     Post[]
+  posts     PostTopic[]
   parentId  String?  @db.ObjectId
   parent    Topic?   @relation("ParentTopic", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children  Topic[]  @relation("ParentTopic")
   createdAt DateTime @default(now())
+}
+
+model PostTopic {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  postId  String  @db.ObjectId
+  post    Post    @relation(fields: [postId], references: [id])
+  topicId String  @db.ObjectId
+  topic   Topic   @relation(fields: [topicId], references: [id])
 }
 
 enum PublishedStatus {
