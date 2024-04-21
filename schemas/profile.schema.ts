@@ -4,11 +4,7 @@ export const updateProfileSchema = Joi.object({
   bio: Joi.string(),
   dob: Joi.string(),
   phone: Joi.number(),
-  image: Joi.string()
-    .empty("")
-    .pattern(new RegExp("^[0-9a-fA-F]{24}$"))
-    .messages({
-      "string.pattern.base": "Image must be a valid MongoDB ObjectId",
-      "string.empty": "Image field must not be empty",
-    }),
+  image: Joi.string().empty("").messages({
+    "string.empty": "Image field must not be empty",
+  }),
 });

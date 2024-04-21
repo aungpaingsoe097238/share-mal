@@ -88,6 +88,7 @@ export const signUp = async (
           bio: "",
           dob: "",
           phone: "",
+          image: ""
         },
       },
     },

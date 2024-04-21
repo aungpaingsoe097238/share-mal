@@ -55,6 +55,7 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
   const { title, content, published, topics } = req.body;
   const postSlug = await generateUniqueSlug(title);
   const existingTopics: any = await validateTopic(res, topics);
+
   const post = await prisma.post.create({
     data: {
       slug: postSlug,
@@ -62,12 +63,10 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
       content,
       published,
       authorId: req.user.id,
-      // Create topics if they exist
       topics: {
         create: existingTopics,
       },
     },
-    // Include author and selected topics for the new post
     include: {
       author: {
         select: {
@@ -85,6 +84,7 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
       },
     },
   });
+
   return responseSuccessMessage(res, "Post created successfully", post);
 };
 
@@ -98,9 +98,11 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
  */
 export const show = async (req: Request, res: Response, next: NextFunction) => {
   const { slug } = req.params;
+
   const existingPost = await prisma.post.findUnique({
     where: { slug, published: "PUBLISHED" },
   });
+
   if (!existingPost) {
     return responseErrorMessage(
       res,
@@ -111,6 +113,7 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
       404
     );
   }
+
   const post = await prisma.post.findUnique({
     where: { slug },
     include: {
@@ -126,6 +129,7 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
       topics: true,
     },
   });
+  
   return responseSuccessMessage(res, "Post detail successfully", post);
 };
 

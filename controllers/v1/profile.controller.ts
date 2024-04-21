@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import {
   responseSuccessMessage,
-  responseErrorMessage,
 } from "../../utils/helpers";
 import prisma from "../../prisma/client";
 
@@ -47,9 +46,7 @@ export const update = async (req: any, res: Response, next: NextFunction) => {
   }
 
   if (image) {
-    profileData.image = {
-      connect: { id: image },
-    };
+    profileData.image = image;
   }
 
   const user = await prisma.user.update({
@@ -63,13 +60,9 @@ export const update = async (req: any, res: Response, next: NextFunction) => {
       id: true,
       name: true,
       email: true,
-      createdAt: true,
       posts: true,
-      profile: {
-        include: {
-          image: true,
-        },
-      },
+      profile: true,
+      createdAt: true,
     },
   });
 
