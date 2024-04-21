@@ -13,7 +13,9 @@ export const createPostSchema = Joi.object({
       "any.only": "Published status is must be PUBLISHED or NOT_PUBLISHED",
     }),
   topics: Joi.array()
-    .items(Joi.string().empty("").required())
+    .items(
+      Joi.string().empty("").pattern(new RegExp("^[0-9a-fA-F]{24}$")).required()
+    )
     .required()
     .unique()
     .messages({
@@ -32,7 +34,9 @@ export const updatePostSchema = Joi.object({
     "any.only": "Published status is must be PUBLISHED or NOT_PUBLISHED",
   }),
   topics: Joi.array()
-    .items(Joi.string().empty("").required())
+    .items(
+      Joi.string().empty("").pattern(new RegExp("^[0-9a-fA-F]{24}$")).required()
+    )
     .unique()
     .messages({
       "any.required": "Topics are required",

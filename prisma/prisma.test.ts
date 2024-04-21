@@ -3,24 +3,20 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const newPost = await prisma.post.create({
+  const updatedUser = await prisma.user.update({
+    where: { id : "6624cbef6c697df514a5677c" },
     data: {
-      slug: "title",
-      title: "title",
-      content: "content",
-      published: "PUBLISHED",
-      authorId: "6624cbef6c697df514a5677c",
-      topics: {
-        create: [
-          { topic: { connect: { id: "6624cbd36c697df514a5675f" } } },
-          { topic: { connect: { id: "6624cbd46c697df514a56760" } } },
-        ],
+      profile: {
+        update: {
+          image: {
+            connect : { id : '66250a93818f92ff07505d09' }
+          },
+        },
       },
     },
   });
-  
 
-  console.log(newPost);
+  console.log(updatedUser);
 }
 
 main()

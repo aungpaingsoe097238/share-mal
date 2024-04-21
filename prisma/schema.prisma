@@ -30,7 +30,7 @@ model Profile {
   bio       String?
   dob       String?
   phone     String?
-  image     String?
+  image     Image?
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @unique @db.ObjectId
   createdAt DateTime @default(now())
@@ -49,21 +49,28 @@ model Post {
 }
 
 model Topic {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   posts     PostTopic[]
-  parentId  String?  @db.ObjectId
-  parent    Topic?   @relation("ParentTopic", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children  Topic[]  @relation("ParentTopic")
-  createdAt DateTime @default(now())
+  parentId  String?     @db.ObjectId
+  parent    Topic?      @relation("ParentTopic", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  Topic[]     @relation("ParentTopic")
+  createdAt DateTime    @default(now())
 }
 
 model PostTopic {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  postId  String  @db.ObjectId
-  post    Post    @relation(fields: [postId], references: [id])
-  topicId String  @db.ObjectId
-  topic   Topic   @relation(fields: [topicId], references: [id])
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  postId  String @db.ObjectId
+  post    Post   @relation(fields: [postId], references: [id])
+  topicId String @db.ObjectId
+  topic   Topic  @relation(fields: [topicId], references: [id])
+}
+
+model Image {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String  @unique @db.ObjectId
 }
 
 enum PublishedStatus {

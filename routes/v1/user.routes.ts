@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { index } from "../../controllers/v1/user.controller";
-import authMiddleware from "../../middlewares/authMiddleware";
+import { index, show } from "../../controllers/v1/user.controller";
 import errorMiddleware from "../../middlewares/errorMiddleware";
 const router = Router();
 
-router.get("/", authMiddleware, errorMiddleware(index));
+router.get("/", errorMiddleware(index));
+router.get("/:id", errorMiddleware(show));
 
 export default router;

@@ -14,7 +14,7 @@ const router = Router();
 
 router
   .route("/")
-  .get(authMiddleware, errorMiddleware(index))
+  .get(errorMiddleware(index))
   .post(
     authMiddleware,
     validationMiddleware(createPostSchema),
@@ -23,7 +23,7 @@ router
 
 router
   .route("/:slug")
-  .get(authMiddleware, errorMiddleware(show))
+  .get(errorMiddleware(show))
   .put(
     authMiddleware,
     validationMiddleware(updatePostSchema),

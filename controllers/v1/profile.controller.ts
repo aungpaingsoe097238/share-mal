@@ -1,8 +1,18 @@
 import { Request, Response, NextFunction } from "express";
-import { responseSuccessMessage } from "../../utils/helpers";
+import {
+  responseSuccessMessage,
+  responseErrorMessage,
+} from "../../utils/helpers";
 import prisma from "../../prisma/client";
-import { ProfileType } from "../../types/profile.types";
 
+/**
+ * Retrieves the profile details of the currently authenticated user.
+ *
+ * @param req Request object
+ * @param res Response object
+ * @param next NextFunction object
+ * @returns A response with the profile details of the authenticated user
+ */
 export const me = async (req: any, res: Response, next: NextFunction) => {
   const me = await prisma.user.findUnique({
     where: { id: req.user.id },
@@ -10,11 +20,19 @@ export const me = async (req: any, res: Response, next: NextFunction) => {
   return responseSuccessMessage(res, "Profile detail successfully", me);
 };
 
+/**
+ * Updates the profile details of the currently authenticated user.
+ *
+ * @param req Request object
+ * @param res Response object
+ * @param next NextFunction object
+ * @returns A response with the updated profile details of the authenticated user
+ */
 export const update = async (req: any, res: Response, next: NextFunction) => {
   const { id } = req.user;
   const { bio, dob, phone, image } = req.body;
 
-  const profileData: ProfileType = {};
+  const profileData: any = {};
 
   if (bio) {
     profileData.bio = bio;
@@ -29,7 +47,9 @@ export const update = async (req: any, res: Response, next: NextFunction) => {
   }
 
   if (image) {
-    profileData.image = image;
+    profileData.image = {
+      connect: { id: image },
+    };
   }
 
   const user = await prisma.user.update({
@@ -45,8 +65,12 @@ export const update = async (req: any, res: Response, next: NextFunction) => {
       email: true,
       createdAt: true,
       posts: true,
-      profile: true,
-    }
+      profile: {
+        include: {
+          image: true,
+        },
+      },
+    },
   });
 
   return responseSuccessMessage(res, "Profile updated successfully", user);

@@ -7,6 +7,14 @@ import {
 import { validateTopic } from "../../utils/post";
 import prisma from "../../prisma/client";
 
+/**
+ * Fetches the list of published posts.
+ *
+ * @param req Request object
+ * @param res Response object
+ * @param next NextFunction object
+ * @returns A response with a list of published posts
+ */
 export const index = async (
   req: Request,
   res: Response,
@@ -32,17 +40,21 @@ export const index = async (
       id: "desc",
     },
   });
-
   return responseSuccessMessage(res, "Post list successfully", posts);
 };
 
+/**
+ * Creates a new post.
+ *
+ * @param req Request object
+ * @param res Response object
+ * @param next NextFunction object
+ * @returns A response with the newly created post
+ */
 export const create = async (req: any, res: Response, next: NextFunction) => {
   const { title, content, published, topics } = req.body;
-
   const postSlug = await generateUniqueSlug(title);
-
   const existingTopics: any = await validateTopic(res, topics);
-
   const post = await prisma.post.create({
     data: {
       slug: postSlug,
@@ -50,10 +62,12 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
       content,
       published,
       authorId: req.user.id,
+      // Create topics if they exist
       topics: {
         create: existingTopics,
       },
     },
+    // Include author and selected topics for the new post
     include: {
       author: {
         select: {
@@ -71,17 +85,22 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
       },
     },
   });
-
-  return responseSuccessMessage(res, "Post create successfully", post);
+  return responseSuccessMessage(res, "Post created successfully", post);
 };
 
+/**
+ * Retrieves the details of a specific post.
+ *
+ * @param req Request object
+ * @param res Response object
+ * @param next NextFunction object
+ * @returns A response with the details of the requested post
+ */
 export const show = async (req: Request, res: Response, next: NextFunction) => {
   const { slug } = req.params;
-
   const existingPost = await prisma.post.findUnique({
     where: { slug, published: "PUBLISHED" },
   });
-
   if (!existingPost) {
     return responseErrorMessage(
       res,
@@ -92,7 +111,6 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
       404
     );
   }
-
   const post = await prisma.post.findUnique({
     where: { slug },
     include: {
@@ -108,10 +126,17 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
       topics: true,
     },
   });
-
   return responseSuccessMessage(res, "Post detail successfully", post);
 };
 
+/**
+ * Updates an existing post.
+ *
+ * @param req Request object
+ * @param res Response object
+ * @param next NextFunction object
+ * @returns A response with the updated post
+ */
 export const update = async (
   req: Request,
   res: Response,
@@ -142,7 +167,8 @@ export const update = async (
     );
   }
 
-  const topicIds = existingPost.topics.map((topic) => topic.id).join(", ");
+  const topicIds = existingPost.topics.map((topic: any) => topic.id).join(", ");
+
   const existingTopics: any = await validateTopic(res, topics || topicIds);
 
   const post = await prisma.post.update({
@@ -177,6 +203,14 @@ export const update = async (
   return responseSuccessMessage(res, "Post update successfully", post);
 };
 
+/**
+ * Deletes an existing post.
+ *
+ * @param req Request object
+ * @param res Response object
+ * @param next NextFunction object
+ * @returns A response indicating the success of the post deletion
+ */
 export const destroy = async (
   req: Request,
   res: Response,
