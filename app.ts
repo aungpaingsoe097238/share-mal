@@ -12,6 +12,7 @@ import v1ProfileRoutes from "./routes/v1/profile.routes";
 import v1TopicRoutes from "./routes/v1/topic.routes";
 import v1PostRoutes from "./routes/v1/post.routes";
 import v1ImageRoutes from "./routes/v1/image.routes";
+import v1CommentRoutes from "./routes/v1/comment.routes";
 
 const app = express();
 const server = http.createServer(app);
@@ -33,6 +34,7 @@ app.use("/api/v1/profile", v1ProfileRoutes);
 app.use("/api/v1/topics", v1TopicRoutes);
 app.use("/api/v1/posts", v1PostRoutes);
 app.use("/api/v1/images", v1ImageRoutes);
+app.use("/api/v1/comments", v1CommentRoutes);
 
 app.get("/", (req, res) => {
   res.json("Api is running");

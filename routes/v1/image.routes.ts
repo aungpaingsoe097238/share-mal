@@ -1,7 +1,6 @@
 import { Router } from "express";
 import authMiddleware from "../../middlewares/authMiddleware";
 import errorMiddleware from "../../middlewares/errorMiddleware";
-import { signUpSchema } from "../../schemas/auth.schema";
 import validationMiddleware from "../../middlewares/validationMiddleware";
 import {
   index,
@@ -9,8 +8,7 @@ import {
   show,
   destroy,
 } from "../../controllers/v1/image.controller";
-import { createImage } from "../../schemas/image.schema";
-import fileUpload from "express-fileupload";
+import { createImageSchema } from "../../schemas/image.schema";
 const router = Router();
 
 router
@@ -18,7 +16,7 @@ router
   .get(authMiddleware, errorMiddleware(index))
   .post(
     authMiddleware,
-    validationMiddleware(createImage),
+    validationMiddleware(createImageSchema),
     errorMiddleware(create)
   );
 router

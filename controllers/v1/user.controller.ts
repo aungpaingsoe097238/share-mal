@@ -5,14 +5,6 @@ import {
 } from "../../utils/helpers";
 import { Request, Response, NextFunction } from "express";
 
-/**
- * Retrieves the list of users.
- *
- * @param req Request object
- * @param res Response object
- * @param next NextFunction object
- * @returns A response with the list of users
- */
 export const index = async (
   req: Request,
   res: Response,
@@ -46,7 +38,7 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
       email: true,
       createdAt: true,
       posts: true,
-      profile: true,
+      profile: true
     },
   });
 

@@ -4,7 +4,12 @@ export const createPostSchema = Joi.object({
   title: Joi.string().required().messages({
     "any.required": "Title is required",
   }),
-  content: Joi.string(),
+  content: Joi.string().required().messages({
+    "any.required": "Content is required",
+  }),
+  coverImage: Joi.string().required().messages({
+    "any.required": "Cover image is required",
+  }),
   published: Joi.string()
     .valid("PUBLISHED", "NOT_PUBLISHED")
     .required()
@@ -30,6 +35,7 @@ export const createPostSchema = Joi.object({
 export const updatePostSchema = Joi.object({
   title: Joi.string(),
   content: Joi.string(),
+  coverImage: Joi.string(),
   published: Joi.string().valid("PUBLISHED", "NOT_PUBLISHED").messages({
     "any.only": "Published status is must be PUBLISHED or NOT_PUBLISHED",
   }),

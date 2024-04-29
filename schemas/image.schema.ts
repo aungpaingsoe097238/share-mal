@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const createImage = Joi.object({
+export const createImageSchema = Joi.object({
   dir_path: Joi.string(),
   file: Joi.string()
     .empty("")
@@ -10,3 +10,5 @@ export const createImage = Joi.object({
       "string.empty": "File field must not be empty",
     }),
 });
+
+

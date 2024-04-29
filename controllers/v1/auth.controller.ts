@@ -10,12 +10,7 @@ import {
   verifyToken,
 } from "../../utils/helpers";
 
-/**
- * Handle user sign-up
- * @param req - Express Request object
- * @param res - Express Response object
- * @param next - NextFunction
- */
+
 export const signUp = async (
   req: Request,
   res: Response,
@@ -104,12 +99,6 @@ export const signUp = async (
   return responseSuccessMessage(res, "Sign Up Successfully", user);
 };
 
-/**
- * Handle user sign-in
- * @param req - Express Request object
- * @param res - Express Response object
- * @param next - NextFunction
- */
 export const signIn = async (
   req: Request,
   res: Response,

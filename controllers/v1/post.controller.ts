@@ -7,22 +7,15 @@ import {
 import { validateTopic } from "../../utils/post";
 import prisma from "../../prisma/client";
 
-/**
- * Fetches the list of published posts.
- *
- * @param req Request object
- * @param res Response object
- * @param next NextFunction object
- * @returns A response with a list of published posts
- */
 export const index = async (
-  req: Request,
+  req: any,
   res: Response,
   next: NextFunction
 ) => {
+  
   const posts = await prisma.post.findMany({
     where: {
-      published: "PUBLISHED",
+      published: "PUBLISHED"
     },
     include: {
       author: {
@@ -35,24 +28,23 @@ export const index = async (
         },
       },
       topics: true,
+      _count: {
+        select: {
+          comments: true,
+          topics: true,
+        },
+      },
     },
     orderBy: {
       id: "desc",
     },
   });
+
   return responseSuccessMessage(res, "Post list successfully", posts);
 };
 
-/**
- * Creates a new post.
- *
- * @param req Request object
- * @param res Response object
- * @param next NextFunction object
- * @returns A response with the newly created post
- */
 export const create = async (req: any, res: Response, next: NextFunction) => {
-  const { title, content, published, topics } = req.body;
+  const { title, content, coverImage, published, topics } = req.body;
   const postSlug = await generateUniqueSlug(title);
   const existingTopics: any = await validateTopic(res, topics);
 
@@ -61,6 +53,7 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
       slug: postSlug,
       title,
       content,
+      coverImage,
       published,
       authorId: req.user.id,
       topics: {
@@ -82,20 +75,18 @@ export const create = async (req: any, res: Response, next: NextFunction) => {
           topic: true,
         },
       },
+      _count: {
+        select: {
+          comments: true,
+          topics: true,
+        },
+      },
     },
   });
 
   return responseSuccessMessage(res, "Post created successfully", post);
 };
 
-/**
- * Retrieves the details of a specific post.
- *
- * @param req Request object
- * @param res Response object
- * @param next NextFunction object
- * @returns A response with the details of the requested post
- */
 export const show = async (req: Request, res: Response, next: NextFunction) => {
   const { slug } = req.params;
 
@@ -126,28 +117,39 @@ export const show = async (req: Request, res: Response, next: NextFunction) => {
           createdAt: true,
         },
       },
+      comments: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      },
       topics: true,
+      _count: {
+        select: {
+          comments: true,
+          topics: true,
+        },
+      },
     },
   });
-  
+
   return responseSuccessMessage(res, "Post detail successfully", post);
 };
 
-/**
- * Updates an existing post.
- *
- * @param req Request object
- * @param res Response object
- * @param next NextFunction object
- * @returns A response with the updated post
- */
 export const update = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { slug } = req.params;
-  const { title, content, published, topics } = req.body;
+  const { title, content, coverImage, published, topics } = req.body;
 
   const existingPost = await prisma.post.findUnique({
     where: { slug },
@@ -180,6 +182,7 @@ export const update = async (
     data: {
       title: title || existingPost.title,
       content: content || existingPost.content,
+      coverImage: coverImage || existingPost.coverImage,
       published: published || existingPost.published,
       topics: {
         deleteMany: {},
@@ -207,14 +210,6 @@ export const update = async (
   return responseSuccessMessage(res, "Post update successfully", post);
 };
 
-/**
- * Deletes an existing post.
- *
- * @param req Request object
- * @param res Response object
- * @param next NextFunction object
- * @returns A response indicating the success of the post deletion
- */
 export const destroy = async (
   req: Request,
   res: Response,
